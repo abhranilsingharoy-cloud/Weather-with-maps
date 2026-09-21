@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather — find any place</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="page">
+  <header class="intro">
+    <h1>What's the weather?</h1>
+    <p>Search a city, or drop a pin on the map.</p>
+  </header>
+
+  <section class="search-block" aria-label="Search by city name">
+    <form id="search-form" class="search-form" autocomplete="off">
+      <input
+        type="text"
+        id="city-input"
+        name="city"
+        placeholder="Try “Kolkata” or “Tokyo”"
+        aria-label="City name"
+      >
+      <button type="submit" id="search-btn">Search</button>
+    </form>
+    <div id="suggestions" class="suggestions" hidden></div>
+  </section>
+
+  <div class="divider" role="separator">
+    <span>or</span>
+  </div>
+
+  <section class="map-block" aria-label="Choose a location on the map">
+    <div id="map"></div>
+    <button type="button" id="locate-btn" class="locate-btn">
+      <span class="dot" aria-hidden="true"></span>
+      Use my current location
+    </button>
+  </section>
+
+  <section id="results" class="results" aria-live="polite">
+    <!-- state markup is swapped in by script.js -->
+  </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
