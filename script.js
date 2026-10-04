@@ -77,7 +77,28 @@ function renderWeather(placeLabel, weather) {
           <span class="detail-value">${weather.lat.toFixed(2)}, ${weather.lon.toFixed(2)}</span>
         </div>
       </div>
+      <div class="mini-map-container">
+        <div id="mini-map"></div>
+      </div>
+      <a href="https://www.google.com/maps/search/?api=1&query=${weather.lat},${weather.lon}" target="_blank" class="map-link-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Open in Google Maps
+      </a>
     </div>`;
+
+  // Initialize Leaflet Map
+  const miniMap = L.map('mini-map', {
+    zoomControl: false,
+    attributionControl: false,
+    scrollWheelZoom: false,
+    dragging: false
+  }).setView([weather.lat, weather.lon], 13);
+  
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(miniMap);
+  L.marker([weather.lat, weather.lon]).addTo(miniMap);
 }
 
 // ---------- Weather fetching (shared by search + map + geolocation) ----------
@@ -129,7 +150,6 @@ function selectPlace(place) {
   hideSuggestions();
   cityInput.value = place.name;
   loadWeatherFor(place.latitude, place.longitude, formatPlace(place));
-  map.setView([place.latitude, place.longitude], 8);
   setMarker(place.latitude, place.longitude);
 }
 
@@ -193,24 +213,52 @@ form.addEventListener('submit', async (e) => {
 });
 
 // ---------- Map ----------
-const map = L.map('map', { zoomControl: true }).setView([20, 0], 2);
+let globe = null;
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
-  maxZoom: 18,
-}).addTo(map);
+function initGlobe() {
+  const mapEl = document.getElementById('map');
+  
+  globe = Globe()
+    (mapEl)
+    .width(mapEl.clientWidth)
+    .height(mapEl.clientHeight)
+    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+    .backgroundColor('#050505')
+    .showAtmosphere(true)
+    .atmosphereColor('#0096ff')
+    .atmosphereAltitude(0.15);
 
-const pinIcon = L.divIcon({
-  className: 'custom-pin',
-  html: '<div style="width:14px;height:14px;border-radius:50%;background:#1c6e63;border:2px solid white;box-shadow:0 0 0 1px #1c6e63;"></div>',
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-});
+  // Set controls
+  globe.controls().autoRotate = true;
+  globe.controls().autoRotateSpeed = 0.5;
 
-let marker = null;
+  // Handle globe click
+  globe.onGlobeClick(async ({ lat, lng }) => {
+    setMarker(lat, lng);
+    renderLoading();
+    const label = await reverseGeocode(lat, lng);
+    loadWeatherFor(lat, lng, label);
+  });
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    globe.width(mapEl.clientWidth);
+    globe.height(mapEl.clientHeight);
+  });
+}
+
+initGlobe();
+
 function setMarker(lat, lon) {
-  if (marker) marker.setLatLng([lat, lon]);
-  else marker = L.marker([lat, lon], { icon: pinIcon }).addTo(map);
+  globe.pointsData([{ lat, lng: lon }]);
+  globe.pointAltitude(0.02)
+       .pointRadius(0.8)
+       .pointColor(() => '#00d2ff')
+       .pointResolution(32);
+       
+  // Animate and zoom in much closer to the location (altitude 0.4)
+  globe.pointOfView({ lat, lng: lon, altitude: 0.4 }, 2000);
 }
 
 async function reverseGeocode(lat, lon) {
@@ -230,14 +278,6 @@ async function reverseGeocode(lat, lon) {
   }
 }
 
-map.on('click', async (e) => {
-  const { lat, lng } = e.latlng;
-  setMarker(lat, lng);
-  renderLoading();
-  const label = await reverseGeocode(lat, lng);
-  loadWeatherFor(lat, lng, label);
-});
-
 // ---------- Locate me ----------
 locateBtn.addEventListener('click', () => {
   if (!navigator.geolocation) {
@@ -248,7 +288,6 @@ locateBtn.addEventListener('click', () => {
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
       const { latitude, longitude } = pos.coords;
-      map.setView([latitude, longitude], 10);
       setMarker(latitude, longitude);
       const label = await reverseGeocode(latitude, longitude);
       loadWeatherFor(latitude, longitude, label);
