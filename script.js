@@ -201,7 +201,7 @@ function initGlobe() {
     (mapEl)
     .width(mapEl.clientWidth)
     .height(mapEl.clientHeight)
-    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
+    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
     .backgroundColor('#050505')
     .showAtmosphere(true)
@@ -236,7 +236,8 @@ function setMarker(lat, lon) {
        .pointColor(() => '#00d2ff')
        .pointResolution(32);
        
-  globe.pointOfView({ lat, lng: lon, altitude: 1.5 }, 1000);
+  // Animate and zoom in much closer to the location (altitude 0.4)
+  globe.pointOfView({ lat, lng: lon, altitude: 0.4 }, 2000);
 }
 
 async function reverseGeocode(lat, lon) {
