@@ -77,7 +77,28 @@ function renderWeather(placeLabel, weather) {
           <span class="detail-value">${weather.lat.toFixed(2)}, ${weather.lon.toFixed(2)}</span>
         </div>
       </div>
+      <div class="mini-map-container">
+        <div id="mini-map"></div>
+      </div>
+      <a href="https://www.google.com/maps/search/?api=1&query=${weather.lat},${weather.lon}" target="_blank" class="map-link-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Open in Google Maps
+      </a>
     </div>`;
+
+  // Initialize Leaflet Map
+  const miniMap = L.map('mini-map', {
+    zoomControl: false,
+    attributionControl: false,
+    scrollWheelZoom: false,
+    dragging: false
+  }).setView([weather.lat, weather.lon], 13);
+  
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(miniMap);
+  L.marker([weather.lat, weather.lon]).addTo(miniMap);
 }
 
 // ---------- Weather fetching (shared by search + map + geolocation) ----------
