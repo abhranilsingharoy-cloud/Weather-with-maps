@@ -140,14 +140,19 @@ body {
 }
 
 #map {
-  height: 260px;
+  height: 350px;
   width: 100%;
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: var(--card);
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
 }
 
-.leaflet-container { font-family: var(--font-ui); border-radius: var(--radius); }
+#map:active {
+  cursor: grabbing;
+}
 
 .locate-btn {
   display: flex;

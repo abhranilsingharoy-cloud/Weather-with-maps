@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weather — find any place</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<title>Weather — find any place (3D)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/globe.gl"></script>
 </head>
 <body>
 
 <main class="page">
   <header class="intro">
     <h1>What's the weather?</h1>
-    <p>Search a city, or drop a pin on the map.</p>
+    <p>Search a city, or drop a pin on the 3D globe.</p>
   </header>
 
   <section class="search-block" aria-label="Search by city name">
@@ -35,7 +35,7 @@
     <span>or</span>
   </div>
 
-  <section class="map-block" aria-label="Choose a location on the map">
+  <section class="map-block" aria-label="Choose a location on the globe">
     <div id="map"></div>
     <button type="button" id="locate-btn" class="locate-btn">
       <span class="dot" aria-hidden="true"></span>
@@ -48,7 +48,6 @@
   </section>
 </main>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

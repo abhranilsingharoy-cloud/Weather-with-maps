@@ -129,7 +129,6 @@ function selectPlace(place) {
   hideSuggestions();
   cityInput.value = place.name;
   loadWeatherFor(place.latitude, place.longitude, formatPlace(place));
-  map.setView([place.latitude, place.longitude], 8);
   setMarker(place.latitude, place.longitude);
 }
 
@@ -193,24 +192,49 @@ form.addEventListener('submit', async (e) => {
 });
 
 // ---------- Map ----------
-const map = L.map('map', { zoomControl: true }).setView([20, 0], 2);
+let globe = null;
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
-  maxZoom: 18,
-}).addTo(map);
+function initGlobe() {
+  const mapEl = document.getElementById('map');
+  
+  globe = Globe()
+    (mapEl)
+    .width(mapEl.clientWidth)
+    .height(mapEl.clientHeight)
+    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+    .backgroundColor('#ffffff')
+    .showAtmosphere(true);
 
-const pinIcon = L.divIcon({
-  className: 'custom-pin',
-  html: '<div style="width:14px;height:14px;border-radius:50%;background:#1c6e63;border:2px solid white;box-shadow:0 0 0 1px #1c6e63;"></div>',
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-});
+  // Set controls
+  globe.controls().autoRotate = true;
+  globe.controls().autoRotateSpeed = 0.5;
 
-let marker = null;
+  // Handle globe click
+  globe.onGlobeClick(async ({ lat, lng }) => {
+    setMarker(lat, lng);
+    renderLoading();
+    const label = await reverseGeocode(lat, lng);
+    loadWeatherFor(lat, lng, label);
+  });
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    globe.width(mapEl.clientWidth);
+    globe.height(mapEl.clientHeight);
+  });
+}
+
+initGlobe();
+
 function setMarker(lat, lon) {
-  if (marker) marker.setLatLng([lat, lon]);
-  else marker = L.marker([lat, lon], { icon: pinIcon }).addTo(map);
+  globe.pointsData([{ lat, lng: lon }]);
+  globe.pointAltitude(0.01)
+       .pointRadius(0.5)
+       .pointColor(() => '#1c6e63')
+       .pointResolution(32);
+       
+  globe.pointOfView({ lat, lng: lon, altitude: 1.5 }, 1000);
 }
 
 async function reverseGeocode(lat, lon) {
@@ -230,14 +254,6 @@ async function reverseGeocode(lat, lon) {
   }
 }
 
-map.on('click', async (e) => {
-  const { lat, lng } = e.latlng;
-  setMarker(lat, lng);
-  renderLoading();
-  const label = await reverseGeocode(lat, lng);
-  loadWeatherFor(lat, lng, label);
-});
-
 // ---------- Locate me ----------
 locateBtn.addEventListener('click', () => {
   if (!navigator.geolocation) {
@@ -248,7 +264,6 @@ locateBtn.addEventListener('click', () => {
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
       const { latitude, longitude } = pos.coords;
-      map.setView([latitude, longitude], 10);
       setMarker(latitude, longitude);
       const label = await reverseGeocode(latitude, longitude);
       loadWeatherFor(latitude, longitude, label);
