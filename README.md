@@ -23,28 +23,19 @@ A sleek, premium weather application featuring an interactive 3D Globe, real-tim
 - **[Nominatim (OpenStreetMap)](https://nominatim.org/)** (Reverse geocoding)
 - **CartoDB** (Dark map tiles)
 
-## 🛠️ Usage / Installation
+## 🛠️ Quick Start (How to Run)
 
-Since this project uses vanilla web technologies and public APIs with no API keys required, you can run it instantly!
+Since this project uses pure HTML, CSS, and JavaScript with public APIs, there is no complicated build process or API keys required. You can clone and run it in a single command!
 
-### Option 1: Live Server (Recommended)
-Use any local HTTP server (like VS Code's "Live Server" extension, Python, or Node's `http-server`) to serve the directory:
+Open your terminal and run:
+
 ```bash
-# Using Python 3
-python -m http.server 8080
-
-# Using Node.js http-server
-npx http-server -p 8080
+git clone https://github.com/debojitbhowmick2006-create/Weather-with-maps.git && cd Weather-with-maps && python -m http.server 8080
 ```
-Then visit `http://localhost:8080` in your browser.
 
-### Option 2: Direct Open
-Simply clone the repository and open `index.html` directly in your web browser.
-```bash
-git clone https://github.com/debojitbhowmick2006-create/Weather-with-maps.git
-cd Weather-with-maps
-# Open index.html in your browser
-```
+*Don't have Python? You can also use `npx http-server -p 8080`, or simply open the `index.html` file directly in your web browser!*
+
+Once the server is running, visit **http://localhost:8080** in your web browser to view the 3D globe!
 
 ## 🤝 Contributing
 
