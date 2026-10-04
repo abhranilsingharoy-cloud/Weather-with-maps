@@ -201,10 +201,12 @@ function initGlobe() {
     (mapEl)
     .width(mapEl.clientWidth)
     .height(mapEl.clientHeight)
-    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
-    .backgroundColor('#ffffff')
-    .showAtmosphere(true);
+    .backgroundColor('#050505')
+    .showAtmosphere(true)
+    .atmosphereColor('#0096ff')
+    .atmosphereAltitude(0.15);
 
   // Set controls
   globe.controls().autoRotate = true;
@@ -229,9 +231,9 @@ initGlobe();
 
 function setMarker(lat, lon) {
   globe.pointsData([{ lat, lng: lon }]);
-  globe.pointAltitude(0.01)
-       .pointRadius(0.5)
-       .pointColor(() => '#1c6e63')
+  globe.pointAltitude(0.02)
+       .pointRadius(0.8)
+       .pointColor(() => '#00d2ff')
        .pointResolution(32);
        
   globe.pointOfView({ lat, lng: lon, altitude: 1.5 }, 1000);
